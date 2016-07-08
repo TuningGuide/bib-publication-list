@@ -2507,7 +2507,7 @@ var bibtexify = (function($) {
             if (bib.options.tweet && entryData.url) {
                 itemStr += bib2html.tweet(entryData, bib);
             }
-            return itemStr.replace(/undefined/g,
+            return itemStr.replace(/undefined[,.]?/g,
                                    '<span class="undefined">missing<\/span>');
         },
         // converts the given author data into HTML
@@ -2734,8 +2734,8 @@ var bibtexify = (function($) {
           }
         });
         // attach the event handlers to the bib items
-	    $( this.$pubTable ).on('click', ".biblink", EventHandlers.showbib);
-	    $( this.$pubTable ).on('click', ".bibclose", EventHandlers.hidebib);
+        $(".biblink", this.$pubTable).on('click', EventHandlers.showbib);
+        $(".bibclose", this.$pubTable).on('click', EventHandlers.hidebib);
     };
     // updates the stats, called whenever a new bibtex entry is parsed
     bibproto.updateStats = function updateStats(item) {
@@ -2839,12 +2839,10 @@ var bibtexify = (function($) {
         if (options.visualization) {
             $pubTable.before('<div id="' + $pubTable.attr('id') + 'pubchart" class="bibchart"></div>');
         }
-
-	    var $bibSrc = null;
-	    if(bibSrc.indexOf('/') === -1) {
-		    $bibSrc = $(bibSrc);
-	    }
-
+        var $bibSrc;
+        if(bibsrc.indexOf('/') === -1) {
+            $bibSrc = $(bibsrc);
+        }
         if ($bibSrc && $bibSrc.length) { // we found an element, use its HTML as bibtex
             new Bib2HTML($bibSrc.html(), $pubTable, options);
             $bibSrc.hide();

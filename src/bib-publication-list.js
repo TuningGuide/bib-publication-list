@@ -55,7 +55,7 @@ var bibtexify = (function($) {
             if (bib.options.tweet && entryData.url) {
                 itemStr += bib2html.tweet(entryData, bib);
             }
-            return itemStr.replace(/undefined/g,
+            return itemStr.replace(/undefined[,.]?/g,
                                    '<span class="undefined">missing<\/span>');
         },
         // converts the given author data into HTML
@@ -282,8 +282,8 @@ var bibtexify = (function($) {
           }
         });
         // attach the event handlers to the bib items
-        $(".biblink", this.$pubTable).live('click', EventHandlers.showbib);
-        $(".bibclose", this.$pubTable).live('click', EventHandlers.hidebib);
+        $(".biblink", this.$pubTable).on('click', EventHandlers.showbib);
+        $(".bibclose", this.$pubTable).on('click', EventHandlers.hidebib);
     };
     // updates the stats, called whenever a new bibtex entry is parsed
     bibproto.updateStats = function updateStats(item) {
@@ -366,12 +366,12 @@ var bibtexify = (function($) {
     //     as the bibtex data
     //   - a URL, which is loaded and used as data. Note, that same-origin
     //     policy restricts where you can load the data.
-    // Supported options: 
+    // Supported options:
     //   - visualization: A boolean to control addition of the visualization.
     //                    Defaults to true.
     //   - tweet: Twitter username to add Tweet links to bib items with a url field.
-    //   - sorting: Control the default sorting of the list. Defaults to [[0, "desc"], 
-    //              [1, "desc"]]. See http://datatables.net/api fnSort for details 
+    //   - sorting: Control the default sorting of the list. Defaults to [[0, "desc"],
+    //              [1, "desc"]]. See http://datatables.net/api fnSort for details
     //              on formatting.
     //   - bib2html: Can be used to override any of the functions or properties of
     //               the bib2html object. See above, starting around line 40.
@@ -387,8 +387,11 @@ var bibtexify = (function($) {
         if (options.visualization) {
             $pubTable.before('<div id="' + bibElemId + 'pubchart" class="bibchart"></div>');
         }
-        var $bibSrc = $(bibsrc);
-        if ($bibSrc.length) { // we found an element, use its HTML as bibtex
+        var $bibSrc;
+        if(bibsrc.indexOf('/') === -1) {
+            $bibSrc = $(bibsrc);
+        }
+        if ($bibSrc && $bibSrc.length) { // we found an element, use its HTML as bibtex
             new Bib2HTML($bibSrc.html(), $pubTable, options);
             $bibSrc.hide();
         } else { // otherwise we assume it is a URL
